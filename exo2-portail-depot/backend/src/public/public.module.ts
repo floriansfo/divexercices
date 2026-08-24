@@ -3,6 +3,7 @@ import { PublicService } from './public.service';
 import { PublicController } from './public.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from '../prisma/prisma.module';
+import { StorageModule } from '../storage/storage.module';
 
 @Module({
   providers: [PublicService],
@@ -15,6 +16,7 @@ import { PrismaModule } from '../prisma/prisma.module';
       }),
     }),
     PrismaModule,
+    StorageModule,
   ],
 })
 export class PublicModule {}
