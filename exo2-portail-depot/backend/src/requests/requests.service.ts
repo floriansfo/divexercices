@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { randomBytes, randomInt } from 'crypto';
 import * as argon2 from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
+import { checkStatus } from '../domain/deposit-request';
 
 
 @Injectable()
@@ -24,12 +25,31 @@ export class RequestsService {
     });
     return { ...depot, pin };
 }
-  async findAllByOwner(ownerId: string) {
-    return this.prisma.depot.findMany({
+    async findAllByOwner(ownerId: string) {
+    const depots = await this.prisma.depot.findMany({
       where: { ownid: ownerId },
       orderBy: { create: 'desc' },
       include: { files: true },
     });
+
+    const now = new Date();
+
+    return depots.map((depot) => ({
+      id: depot.id,
+      title: depot.title,
+      token: depot.token,
+      expectedFileCount: depot.filecount,
+      uploadedFileCount: depot.files.length,
+      expiresAt: depot.expirelink,
+      createdAt: depot.create,
+      status: checkStatus(depot.expirelink, depot.completedfile, now),
+      files: depot.files.map((f) => ({
+        id: f.id,
+        name: f.name,
+        size: f.size,
+        createdAt: f.create,
+      })),
+    }));
   }
 }
 
