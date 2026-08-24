@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Avocat {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  created      DateTime @default(now())
+  request      Depot[]
+}
+
+model Depot {
+  id            String         @id @default(uuid())
+  title         String
+  token         String         @unique
+  pinhash       String
+  filecount     Int
+  expirelink    DateTime
+  completedfile DateTime?
+  failpin       Int            @default(0)
+  lock          DateTime?
+  create        DateTime       @default(now())
+  ownid         String
+  own           Avocat         @relation(fields: [ownid], references: [id])
+  files         Depotfichier[]
+}
+
+model Depotfichier {
+  id        String   @id @default(uuid())
+  name      String
+  type      String
+  size      Int
+  object    String   @unique
+  create    DateTime @default(now())
+  requestid String
+  request   Depot    @relation(fields: [requestid], references: [id])
+}

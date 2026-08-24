@@ -6,3 +6,9 @@ coverage/
 .env.local
 *.log
 .DS_Store
+
+# Skills generees par Prisma init
+.agents/
+.claude/
+.windsurf/
+skills-lock.json
